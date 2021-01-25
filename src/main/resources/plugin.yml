@@ -1,3 +1,105 @@
 main: mobshop.Mobshop
 name: Mobshop
 version: 1.0
+author: Jarrod W. [SpoopyM8]
+description: A plugin to make it so mobs are able to drop a new form of currency!
+commands:
+  addCoins:
+    description: Used to give a player mob coins.
+    usage: /addCoins [amount] [player]
+    permission: mobshop.add
+  removeCoins:
+    description: Used to remove a players mob coins.
+    usage: /removeCoins [player] [amount]
+    permission: mobshop.remove
+  setCoins:
+    description: Used to set a players mob coins.
+    usage: /setCoins [amount] [player]
+    permission: mobshop.set
+  coinBalance:
+    description: Used to see how many mob coins a player has.
+    usage: /coinBalance [player]
+    permission: mobshop.get
+  coinShop:
+    description: Used to access the Coin shop!
+    usage: /coinShop
+    permission: mobshop.shop
+  giveCoins:
+    description: Used to give a player some of your coins.
+    usage: /giveCoins [player] [amount]
+    permission: mobshop.give
+permissions:
+  mobshop.*:
+    description: Gives access to all Mobshop commands
+    children:
+      mobshop.add.*: true
+      mobshop.remove.*: true
+      mobshop.set.*: true
+      mobshop.get.*: true
+      mobshop.give: true
+  mobshop.add:
+    description: Allows a user to use the /add command.
+  mobshop.add.others:
+    description: Allows a user to use the /add command on others.
+  mobshop.add.self:
+    description: Allows a user to use the /add command on themselves.
+  mobshop.add.*:
+    description: Allows a user full access to the /add command.
+    children:
+      mobshop.add: true
+      mobshop.add.others: true
+      mobshop.add.self: true
+  mobshop.remove:
+    description: Allows a user to use the /remove command.
+  mobshop.remove.others:
+    description: Allows a user to use the /remove command on others.
+  mobshop.remove.self:
+    description: Allows a user to use the /remove command on themselves.
+  mobshop.remove.*:
+    description: Allows a user full access to the /remove command.
+    children:
+      mobshop.remove: true
+      mobshop.remove.others: true
+      mobshop.remove.self: true
+  mobshop.set:
+    description: Allows a user to use the /set command.
+  mobshop.set.others:
+    description: Allows a user to use the /set command on others.
+  mobshop.set.self:
+    description: Allows a user to use the /set command on themselves.
+  mobshop.set.*:
+    description: Allows a user full access to the /set command.
+    children:
+      mobshop.set: true
+      mobshop.set.others: true
+      mobshop.set.self: true
+  mobshop.get:
+    description: Allows a user to use the /get command.
+    default: true
+  mobshop.get.others:
+    description: Allows a user to use the /get command on others.
+  mobshop.get.self:
+    description: Allows a user to use the /get command on themselves.
+    default: true
+  mobshop.get.*:
+    description: Allows a user full access to the /get command.
+    children:
+      mobshop.get: true
+      mobshop.get.others: true
+      mobshop.get.self: true
+  mobshop.shop:
+    description: Allows a user to use the /shop command.
+    default: true
+  mobshop.shop.edit:
+    description: Allows a user to edit the coinshop.
+  mobshop.shop.add:
+    description: Allows a user to add items to the coinshop.
+  mobshop.shop.*:
+    description: Allows a user full access to the /coinShop command.
+    children:
+      mobshop.shop: true
+      mobshop.shop.edit: true
+      mobshop.shop.add: true
+  mobshop.give:
+    description: Allows a user to give another user their coins.
+    default: true
