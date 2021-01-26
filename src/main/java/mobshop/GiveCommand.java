@@ -12,6 +12,12 @@ import org.bukkit.ChatColor;
 import org.apache.commons.lang3.math.NumberUtils;
 
 public class GiveCommand implements CommandExecutor {
+    private Mobshop mobShop;
+
+    GiveCommand (Mobshop mobShop) {
+        this.mobShop = mobShop;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player && args.length == 2 && sender.hasPermission("mobshop.add.others") && NumberUtils.isParsable(args[1]) && Bukkit.getPlayer(args[0]) != null) {
@@ -20,9 +26,9 @@ public class GiveCommand implements CommandExecutor {
                 return true;
             }
             if (Bukkit.getPlayer(args[0]) != null) {
-                if (Mobshop.getCoins((Player)sender) >= Integer.parseInt(args[1])) {
-                    Mobshop.removeCoins((Player)sender, Integer.parseInt(args[1]));
-                    Mobshop.addCoins(Bukkit.getPlayer(args[0]), Integer.parseInt(args[1]));
+                if (mobShop.getCoins((Player)sender) >= Integer.parseInt(args[1])) {
+                    mobShop.removeCoins((Player)sender, Integer.parseInt(args[1]));
+                    mobShop.addCoins(Bukkit.getPlayer(args[0]), Integer.parseInt(args[1]));
                     sender.sendMessage(ChatColor.YELLOW + "Given " + args[1] + " coins to " + Bukkit.getPlayer(args[0]).getDisplayName() + ChatColor.YELLOW + ".");
                 }
                 return true;

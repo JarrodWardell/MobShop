@@ -22,7 +22,7 @@ commands:
     permission: mobshop.get
   coinShop:
     description: Used to access the Coin shop!
-    usage: /coinShop
+    usage: /coinShop [page or nothing]
     permission: mobshop.shop
   giveCoins:
     description: Used to give a player some of your coins.
@@ -92,14 +92,14 @@ permissions:
     default: true
   mobshop.shop.edit:
     description: Allows a user to edit the coinshop.
-  mobshop.shop.add:
-    description: Allows a user to add items to the coinshop.
+  mobshop.shop.access.*:
+    description: Allows a user access to all coinshop pages.
   mobshop.shop.*:
     description: Allows a user full access to the /coinShop command.
     children:
       mobshop.shop: true
       mobshop.shop.edit: true
-      mobshop.shop.add: true
+      mobshop.shop.access.*: true
   mobshop.give:
     description: Allows a user to give another user their coins.
     default: true

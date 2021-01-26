@@ -12,10 +12,16 @@ import org.bukkit.ChatColor;
 import org.apache.commons.lang3.math.NumberUtils;
 
 public class SetCommand implements CommandExecutor {
+    private Mobshop mobShop;
+
+    SetCommand (Mobshop mobShop) {
+        this.mobShop = mobShop;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player && args.length == 1 && sender.hasPermission("mobshop.set.self") && NumberUtils.isParsable(args[0])) {
-            Mobshop.setCoins((Player)sender, Integer.parseInt(args[0]));
+            mobShop.setCoins((Player)sender, Integer.parseInt(args[0]));
             sender.sendMessage(((Player)sender).getDisplayName() + ChatColor.YELLOW + "'s coin balance was set to " + args[0] + " coins.");
             return true;
         } else if (args.length == 2 && sender.hasPermission("mobshop.set.others") && NumberUtils.isParsable(args[0]) && Bukkit.getPlayer(args[1]) != null) {
@@ -23,7 +29,7 @@ public class SetCommand implements CommandExecutor {
                 return false;
             }
             if (Bukkit.getPlayer(args[1]) != null) {
-                Mobshop.setCoins(Bukkit.getPlayer(args[1]), Integer.parseInt(args[0]));
+                mobShop.setCoins(Bukkit.getPlayer(args[1]), Integer.parseInt(args[0]));
                 sender.sendMessage(Bukkit.getPlayer(args[1]).getDisplayName() + ChatColor.YELLOW + "'s coin balance was set to' " + args[0] + " coins.");
                 return true;
             }
