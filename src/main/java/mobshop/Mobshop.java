@@ -69,12 +69,12 @@ public class Mobshop extends JavaPlugin {
         getServer().getPluginManager().registerEvents(shopInv, this);
         getServer().getPluginManager().registerEvents(editInv, this);
         getServer().getPluginManager().registerEvents(new DeathEvents(config, this), this);
-        getCommand("addcoins").setExecutor(new AddCommand(this));
-        getCommand("coinbalance").setExecutor(new BalCommand(this));
-        getCommand("removecoins").setExecutor(new RemoveCommand(this));
-        getCommand("setcoins").setExecutor(new SetCommand(this));
-        getCommand("givecoins").setExecutor(new GiveCommand(this));
-        getCommand("mobshop").setExecutor(new ShopCommand(this, shopInv, editInv));
+        getCommand("madd").setExecutor(new AddCommand(this));
+        getCommand("mbal").setExecutor(new BalCommand(this));
+        getCommand("mremove").setExecutor(new RemoveCommand(this));
+        getCommand("mset").setExecutor(new SetCommand(this));
+        getCommand("mgive").setExecutor(new GiveCommand(this));
+        getCommand("mshop").setExecutor(new ShopCommand(this, shopInv, editInv));
 
         new ScheduledTasks(dataHandler, this).saveData.runTaskTimerAsynchronously(plugin, config.getInt("save.saveFrequency") * 20 * 60, config.getInt("save.saveFrequency") * 20 * 60);
     }

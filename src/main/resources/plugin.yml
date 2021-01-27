@@ -4,29 +4,29 @@ version: 1.0
 author: Jarrod W. [SpoopyM8]
 description: A plugin to make it so mobs are able to drop a new form of currency!
 commands:
-  addCoins:
+  mAdd:
     description: Used to give a player mob coins.
-    usage: /addCoins [amount] [player]
+    usage: /mAdd [amount] [player]
     permission: mobshop.add
-  removeCoins:
+  mRemove:
     description: Used to remove a players mob coins.
-    usage: /removeCoins [player] [amount]
+    usage: /mRemove [player] [amount]
     permission: mobshop.remove
-  setCoins:
+  mSet:
     description: Used to set a players mob coins.
-    usage: /setCoins [amount] [player]
+    usage: /mSet [amount] [player]
     permission: mobshop.set
-  coinBalance:
+  mBal:
     description: Used to see how many mob coins a player has.
-    usage: /coinBalance [player]
+    usage: /mBal [player]
     permission: mobshop.get
-  mobShop:
+  mShop:
     description: Used to access the mob shop!
-    usage: /mobShop
+    usage: /mShop
     permission: mobshop.shop
-  giveCoins:
+  mGive:
     description: Used to give a player some of your coins.
-    usage: /giveCoins [player] [amount]
+    usage: /mGive [player] [amount]
     permission: mobshop.give
 permissions:
   mobshop.*:
@@ -88,12 +88,12 @@ permissions:
       mobshop.get.others: true
       mobshop.get.self: true
   mobshop.shop:
-    description: Allows a user to use the /mobshop command.
+    description: Allows a user to use the /shop command.
     default: true
   mobshop.shop.edit:
     description: Allows a user to edit the mobshop.
   mobshop.shop.*:
-    description: Allows a user full access to the /mobshop command.
+    description: Allows a user full access to the /shop command.
     children:
       mobshop.shop: true
       mobshop.shop.edit: true
