@@ -19,6 +19,10 @@ public class EditShopEvents implements Listener {
         player.openInventory(invent);
     }
 
+    public Inventory getInventory() {
+        return invent;
+    }
+
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent e) {
         if (!e.getInventory().equals(invent)) return;

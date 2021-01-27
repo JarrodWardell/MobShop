@@ -45,17 +45,25 @@ public class Mobshop extends JavaPlugin {
         config.addDefault("shop.contents", Bukkit.createInventory(null, 27).getContents());
         config.options().copyDefaults(true);
         saveConfig();
+
+        if (config.getInt("shop.size") > 27 || config.getInt("shop.size") % 9 != 0) {
+            config.set("shop.size", 27);
+        }
         
         Plugin plugin = this;
         userData = dataHandler.load();
 
-        Inventory toSet = Bukkit.createInventory(null, config.getInt("shop.size"), config.getString("shop.displayName"));
+        Inventory toSet = Bukkit.createInventory(null, config.getInt("shop.size") * 2, config.getString("shop.displayName"));
         
         List<ItemStack> contents = (List<ItemStack>)config.getList("shop.contents"); // living under the assumption the person configuring it is not stupid with config. if this fails they messed up their config anywho
 
-        toSet.setContents(config.getList("shop.contents") == null ? Bukkit.createInventory(null, 27).getContents() : contents.toArray(new ItemStack[0]));
+        toSet.setContents(config.getList("shop.contents") == null ? Bukkit.createInventory(null, config.getInt("shop.size") * 2).getContents() : contents.toArray(new ItemStack[0]));
 
-        shopInv = new ShopInventoryEvents(toSet, this);
+
+
+        shopInv = new ShopInventoryEvents(Bukkit.createInventory(null, config.getInt("shop.size"), config.getString("shop.displayName")), toSet, this);
+        shopInv.updateInventoryContents(toSet);
+
         editInv = new EditShopEvents(toSet, shopInv);
 
         getServer().getPluginManager().registerEvents(shopInv, this);
@@ -66,7 +74,7 @@ public class Mobshop extends JavaPlugin {
         getCommand("removecoins").setExecutor(new RemoveCommand(this));
         getCommand("setcoins").setExecutor(new SetCommand(this));
         getCommand("givecoins").setExecutor(new GiveCommand(this));
-        getCommand("coinshop").setExecutor(new ShopCommand(this, shopInv, editInv));
+        getCommand("mobshop").setExecutor(new ShopCommand(this, shopInv, editInv));
 
         new ScheduledTasks(dataHandler, this).saveData.runTaskTimerAsynchronously(plugin, config.getInt("save.saveFrequency") * 20 * 60, config.getInt("save.saveFrequency") * 20 * 60);
     }
@@ -77,7 +85,11 @@ public class Mobshop extends JavaPlugin {
 
     public Integer addCoins(Player player, Integer amount) {
         if (userData.containsKey(player.getUniqueId())) {
-            userData.put(player.getUniqueId(), userData.get(player.getUniqueId()) + amount);
+            if (userData.get(player.getUniqueId()) + amount < userData.get(player.getUniqueId())) { // do not allow rollovers
+                userData.put(player.getUniqueId(), Integer.MAX_VALUE);
+            } else {
+                userData.put(player.getUniqueId(), userData.get(player.getUniqueId()) + amount);
+            }
         } else {
             userData.put(player.getUniqueId(), amount);
         }
@@ -86,10 +98,10 @@ public class Mobshop extends JavaPlugin {
 
     public boolean removeCoins(Player player, Integer amount) {
         if (userData.containsKey(player.getUniqueId())) {
-            userData.put(player.getUniqueId(), userData.get(player.getUniqueId()) - amount);
-            if (userData.get(player.getUniqueId()) < 0) {
-                //userData.remove(player.getUniqueId()); // might be stupid to do this lol
-                return false;
+            if (userData.get(player.getUniqueId()) - amount > userData.get(player.getUniqueId())) { // do not allow rollovers
+                userData.put(player.getUniqueId(), Integer.MIN_VALUE);
+            } else {
+                userData.put(player.getUniqueId(), userData.get(player.getUniqueId()) - amount);
             }
             return true;
         }
@@ -126,7 +138,7 @@ public class Mobshop extends JavaPlugin {
             getLogger().info("Saved user data.");
         }
 
-        Inventory toSave = shopInv.getInventory();
+        Inventory toSave = editInv.getInventory();
 
         config.set("shop.displayName", toSave.getName());
         config.set("shop.size", toSave.getSize());

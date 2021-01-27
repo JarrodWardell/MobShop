@@ -11,22 +11,30 @@ import org.bukkit.Material;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
+import org.apache.commons.lang3.text.WordUtils;
+
 public class ShopInventoryEvents implements Listener {
     private Inventory invent;
+    private Inventory editInvent;
     private Mobshop mobShop;
 
-    ShopInventoryEvents(Inventory invent, Mobshop handler) {
+    ShopInventoryEvents(Inventory invent, Inventory editInvent, Mobshop handler) {
         mobShop = handler;
         this.invent = Bukkit.createInventory(null, invent.getSize(), invent.getName());
         this.invent.setContents(invent.getContents());
+        this.editInvent = Bukkit.createInventory(null, editInvent.getSize());
+        this.editInvent.setContents(editInvent.getContents());
     }
 
     public void updateInventoryContents(Inventory invent) {
-        this.invent.setContents(invent.getContents());
+        this.editInvent.setContents(invent.getContents());
+        for (int i = 0; i < this.invent.getSize(); i++) { // update the inventory with the top half of the edit inventory
+            this.invent.setItem(i, editInvent.getItem(i));
+        }
     }
 
     public void updateInventoryName(String newName) {
-        Inventory toSet = Bukkit.createInventory(null, 27, newName);
+        Inventory toSet = Bukkit.createInventory(null, invent.getSize(), newName);
         toSet.setContents(invent.getContents());
         invent = toSet;
     }
@@ -50,25 +58,30 @@ public class ShopInventoryEvents implements Listener {
         String action = NBTHelper.getNBTString(e.getCurrentItem(), "mobshop.action");
         if (action.equals("")) return; // do nothing
 
-        ItemStack item = e.getCurrentItem();
+        ItemStack clicked = e.getCurrentItem();
+        ItemStack toSell = editInvent.getItem(e.getRawSlot() + invent.getSize());
 
         if (action.equals("buy")) {
-            if (mobShop.getCoins(player) >= NBTHelper.getNBTInt(item, "mobshop.price")) {
-                ItemStack toGive = new ItemStack(NBTHelper.removeNBT(NBTHelper.removeNBT(NBTHelper.removeNBT(item, "mobshop.action"), "mobshop.amount"), "mobshop.price"));
-                toGive.setAmount(NBTHelper.getNBTInt(item, "mobshop.amount"));
+            if (mobShop.getCoins(player) >= NBTHelper.getNBTInt(clicked, "mobshop.price")) {
+                ItemStack toGive = new ItemStack(toSell);
+                toGive.setAmount(NBTHelper.getNBTInt(clicked, "mobshop.amount"));
                 int space = 0;
-                for (ItemStack invItem : player.getInventory().getContents() ) {
-                    if (invItem.isSimilar(toGive)) space += toGive.getMaxStackSize() - invItem.getAmount();
-                    if (invItem == null || invItem.getType() == Material.AIR) space += toGive.getMaxStackSize();
+                for (int i = 0; i < 36; i++) {
+                    if (player.getInventory().getItem(i) == null || player.getInventory().getItem(i).getType() == Material.AIR) {
+                        space += toGive.getMaxStackSize();
+                        continue;
+                    }
+                    if (player.getInventory().getItem(i).isSimilar(toGive)) space += toGive.getMaxStackSize() - player.getInventory().getItem(i).getAmount();
                 }
                 if (space >= toGive.getAmount()) {
-                    mobShop.removeCoins(player, NBTHelper.getNBTInt(item, "mobshop.price"));
+                    mobShop.removeCoins(player, NBTHelper.getNBTInt(clicked, "mobshop.price"));
                     player.getInventory().addItem(toGive);
+                    player.sendMessage(ChatColor.YELLOW + "Purchased " + NBTHelper.getNBTInt(clicked, "mobshop.amount") + "x " + (toGive.getItemMeta().hasDisplayName() ? toGive.getItemMeta().getDisplayName() : WordUtils.capitalize(toGive.getType().name().replace("_", " ").toLowerCase())) + " for " + NBTHelper.getNBTInt(clicked, "mobshop.price") + " coins!");
                 } else {
                     player.sendMessage(ChatColor.YELLOW + "Your inventory is too full for that!");
                 }
             } else {
-                player.sendMessage(ChatColor.YELLOW + "You don't have enough coins for that! It costs " + NBTHelper.getNBTInt(item, "mobshop.price") + " coins!");
+                player.sendMessage(ChatColor.YELLOW + "You don't have enough coins for that! It costs " + NBTHelper.getNBTInt(clicked, "mobshop.price") + " coins!");
             }
         } else if (action.equals("sell")) {
             // 
